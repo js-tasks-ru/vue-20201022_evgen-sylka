@@ -1,18 +1,26 @@
 import Vue from './vue.esm.browser.js';
 
-/** URL адрес API */
+/** URL for API */
 const API_URL = 'https://course-vue.javascript.ru/api';
 
-/** ID митапа для примера; используйте его при получении митапа */
+/** Meetup id */
 const MEETUP_ID = 6;
 
 /**
- * Возвращает ссылку на изображение митапа для митапа
- * @param meetup - объект с описанием митапа (и параметром meetupId)
- * @return {string} - ссылка на изображение митапа
+ * Return link for meetup image
+ * @param meetup - meetup object
+ * @return {string} - link for image
  */
 function getMeetupCoverLink(meetup) {
   return `${API_URL}/images/${meetup.imageId}`;
+}
+
+/**
+ * Return link for meetup info
+ * @returns {string}
+ */
+function getMeetupLink() {
+  return `${API_URL}/meetups/${MEETUP_ID}`;
 }
 
 /**
@@ -44,23 +52,67 @@ const agendaItemIcons = {
   other: 'cal-sm',
 };
 
+const TALK_TYPE = 'talk';
+
 export const app = new Vue({
   el: '#app',
 
   data: {
-    //
+    agenda: [],
+    date: null,
+    description: '',
+    imageUrl: null,
+    organizer: '',
+    place: '',
+    title: ''
   },
 
   mounted() {
-    // Требуется получить данные митапа с API
+    this.getMeetupInfo();
   },
 
   computed: {
-    //
+    formattedDate() {
+      return new Date(this.date).toLocaleString(navigator.language,{
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    },
+    hasAgenda() {
+      return this.agenda?.length;
+    }
   },
 
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
-  },
+    async getMeetupInfo() {
+        await fetch(getMeetupLink())
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            this.agenda = data.agenda;
+            this.date = data.date;
+            this.description = data.description;
+            this.imageUrl = getMeetupCoverLink(data);
+            this.organizer = data.organizer;
+            this.place = data.place;
+            this.title = data.title;
+        });
+    },
+    getTitleByType(title, type) {
+      return title || agendaItemTitles[type] || agendaItemTitles.other;
+    },
+    getIconByType(type) {
+      return agendaItemIcons[type] || agendaItemIcons.other;
+    },
+    isShowSpeaker(type) {
+      return TALK_TYPE === type;
+    },
+    getBackgroundImage() {
+      return {
+        'background-image': this.imageUrl ? `url(${this.imageUrl})` : 'none'
+      }
+    }
+  }
 });
