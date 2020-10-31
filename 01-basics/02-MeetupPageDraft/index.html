@@ -12,7 +12,7 @@
 <div id="app">
   <div>
     <div
-      :style="getBackgroundImage()"
+      :style="meetupStyle"
       class="meetup-cover">
       <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>
@@ -32,16 +32,16 @@
               class="meetup-agenda__empty">Программа пока пуста, но когда-нибудь в ней обязательно что-нибудь появится!</p>
             <div
               v-else
-              v-for="event in agenda"
+              v-for="event in preparedAgenda"
               :key="event.id"
               class="meetup-agenda__item">
               <div class="meetup-agenda__item-col">
-                <img class="icon" alt="icon" :src="`/assets/icons/icon-${getIconByType(event.type)}.svg`" />
+                <img class="icon" alt="icon" :src="`/assets/icons/icon-${event.icon}.svg`" />
               </div>
               <div class="meetup-agenda__item-col">{{ event.startsAt }} - {{ event.endsAt }}</div>
               <div class="meetup-agenda__item-col">
-                <h5 class="meetup-agenda__title"><span v-html="getTitleByType(event.title, event.type)"></span></h5>
-                <p v-if="isShowSpeaker(event.type)">
+                <h5 class="meetup-agenda__title">{{ event.title }}</h5>
+                <p v-if="event.isShowSpeaker">
                   <span>{{ event.speaker }}</span>
                   <span class="meetup-agenda__dot"></span>
                   <span class="meetup-agenda__lang">{{ event.language }}</span>

@@ -81,6 +81,19 @@ export const app = new Vue({
     },
     hasAgenda() {
       return this.agenda?.length;
+    },
+    preparedAgenda() {
+      return this.agenda.map(item => ({
+        ...item,
+        icon: this.getIconByType(item.type),
+        title: this.getTitleByType(item.title, item.type),
+        isShowSpeaker: this.isShowSpeaker(item.type)
+      }));
+    },
+    meetupStyle() {
+      return {
+        'background-image': this.imageUrl ? `url(${this.imageUrl})` : 'none'
+      }
     }
   },
 
@@ -108,11 +121,6 @@ export const app = new Vue({
     },
     isShowSpeaker(type) {
       return TALK_TYPE === type;
-    },
-    getBackgroundImage() {
-      return {
-        'background-image': this.imageUrl ? `url(${this.imageUrl})` : 'none'
-      }
     }
   }
 });
